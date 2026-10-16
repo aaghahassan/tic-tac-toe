@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-4">
+
+    <h1 class="text-4xl font-bold text-sky-400 mb-4">
+        Tic Tac Toe
+    </h1>
+
+    <button id="themeBtn"
+        class="mb-5 px-5 py-2 rounded-lg bg-slate-700 text-white hover:opacity-80">
+        Light Mode
+    </button>
+
+    <p id="status" class="text-xl text-yellow-400 mb-6">
+        Player X's turn
+    </p>
+
+    <div id="board" class="grid grid-cols-3 gap-3 w-full max-w-[320px]">
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+        <button class="cell bg-slate-800 border-2 border-slate-700 rounded-xl aspect-square text-4xl font-bold hover:bg-slate-700 transition"></button>
+    </div>
+
+    <button id="restart"
+        class="mt-6 px-6 py-3 rounded-lg bg-sky-400 text-slate-900 font-bold hover:bg-sky-300 transition">
+        Restart Game
+    </button>
+
+    <script>
+
+        // Get HTML elements
+        const cells = document.querySelectorAll(".cell");
+        const status = document.getElementById("status");
+        const restart = document.getElementById("restart");
+        const themeBtn = document.getElementById("themeBtn");
+        const title = document.querySelector("h1");
+        const boardElement = document.getElementById("board");
+
+        // Game variables
+        let currentPlayer = "X";
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+
+        // Theme variable
+        let darkMode = true;
+
+        // Winning combinations
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        // Check winner
+        function checkWinner() {
+
+            for (let combination of winningCombinations) {
+
+                let a = combination[0];
+                let b = combination[1];
+                let c = combination[2];
+
+                if (
+                    board[a] !== "" &&
+                    board[a] === board[b] &&
+                    board[b] === board[c]
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Handle cell click
+        function handleClick(event) {
+
+            let cell = event.currentTarget;
+            let index = Array.from(cells).indexOf(cell);
+
+            // Stop if game has ended
+            if (gameActive === false) {
+                return;
+            }
+
+            // Stop if cell is already filled
+            if (board[index] !== "") {
+                return;
+            }
+
+            // Place X or O
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.disabled = true;
+
+            // Give each player a different color
+            if (currentPlayer === "X") {
+                cell.classList.add("text-sky-400");
+            } else {
+                cell.classList.add("text-rose-400");
+            }
+
+            // Check for winner
+            if (checkWinner() === true) {
+                status.textContent = "Player " + currentPlayer + " wins!";
+                gameActive = false;
+                return;
+            }
+
+            // Check for draw
+            if (board.every(value => value !== "")) {
+                status.textContent = "It's a draw!";
+                gameActive = false;
+                return;
+            }
+
+            // Switch player
+            if (currentPlayer === "X") {
+                currentPlayer = "O";
+            } else {
+                currentPlayer = "X";
+            }
+
+            status.textContent = "Player " + currentPlayer + "'s turn";
+        }
+
+        // Restart game
+        function restartGame() {
+
+            currentPlayer = "X";
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+
+            cells.forEach(function(cell) {
+
+                cell.textContent = "";
+                cell.disabled = false;
+
+                cell.classList.remove("text-sky-400");
+                cell.classList.remove("text-rose-400");
+
+            });
+
+            status.textContent = "Player X's turn";
+        }
+
+        // Light Mode and Dark Mode
+        function changeTheme() {
+
+            if (darkMode === true) {
+
+                // Change page background and text
+                document.body.classList.replace("bg-slate-900", "bg-gray-100");
+                document.body.classList.replace("text-white", "text-gray-900");
+
+                // Change title
+                title.classList.replace("text-sky-400", "text-sky-700");
+
+                // Change status text
+                status.classList.replace("text-yellow-400", "text-amber-700");
+
+                // Change board cells
+                cells.forEach(function(cell) {
+                    cell.classList.replace("bg-slate-800", "bg-white");
+                    cell.classList.replace("border-slate-700", "border-gray-300");
+                    cell.classList.replace("hover:bg-slate-700", "hover:bg-gray-200");
+                });
+
+                // Change theme button
+                themeBtn.textContent = "Dark Mode";
+                themeBtn.classList.replace("bg-slate-700", "bg-gray-300");
+                themeBtn.classList.replace("text-white", "text-gray-900");
+
+                // Change restart button
+                restart.classList.replace("bg-sky-400", "bg-sky-600");
+                restart.classList.replace("text-slate-900", "text-white");
+                restart.classList.replace("hover:bg-sky-300", "hover:bg-sky-700");
+
+                darkMode = false;
+
+            } else {
+
+                // Change page background and text
+                document.body.classList.replace("bg-gray-100", "bg-slate-900");
+                document.body.classList.replace("text-gray-900", "text-white");
+
+                // Change title
+                title.classList.replace("text-sky-700", "text-sky-400");
+
+                // Change status text
+                status.classList.replace("text-amber-700", "text-yellow-400");
+
+                // Change board cells
+                cells.forEach(function(cell) {
+                    cell.classList.replace("bg-white", "bg-slate-800");
+                    cell.classList.replace("border-gray-300", "border-slate-700");
+                    cell.classList.replace("hover:bg-gray-200", "hover:bg-slate-700");
+                });
+
+                // Change theme button
+                themeBtn.textContent = "Light Mode";
+                themeBtn.classList.replace("bg-gray-300", "bg-slate-700");
+                themeBtn.classList.replace("text-gray-900", "text-white");
+
+                // Change restart button
+                restart.classList.replace("bg-sky-600", "bg-sky-400");
+                restart.classList.replace("text-white", "text-slate-900");
+                restart.classList.replace("hover:bg-sky-700", "hover:bg-sky-300");
+
+                darkMode = true;
+            }
+        }
+
+        // Add click events to all cells
+        cells.forEach(function(cell) {
+            cell.addEventListener("click", handleClick);
+        });
+
+        // Add restart event
+        restart.addEventListener("click", restartGame);
+
+        // Add theme toggle event
+        themeBtn.addEventListener("click", changeTheme);
+
+    </script>
+
+</body>
+</html>
